@@ -18,62 +18,55 @@ export type StarburstSize = 'sm' | 'md' | 'lg';
 // COMPONENT PROPS INTERFACES
 // ============================================
 
-export interface RetroButtonProps {
+export interface RetroButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   children: ReactNode;
   variant?: ButtonVariant;
   size?: ButtonSize;
   onClick?: () => void;
-  className?: string;
-  disabled?: boolean;
 }
 
-export interface RetroCardProps {
+export interface RetroCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   title?: string;
   variant?: CardVariant;
-  className?: string;
 }
 
-export interface RetroBadgeProps {
+export interface RetroBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: ReactNode;
   variant?: BadgeVariant;
   size?: BadgeSize;
 }
 
-export interface RetroInputProps {
-  placeholder?: string;
-  value?: string;
-  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+export interface RetroInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'onChange'> {
   type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
-  className?: string;
-  disabled?: boolean;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export interface RetroSpeechBubbleProps {
+export interface RetroSpeechBubbleProps extends React.HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   direction?: SpeechBubbleDirection;
   variant?: SpeechBubbleVariant;
 }
 
-export interface RetroPanelProps {
+export interface RetroPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
   sound?: string;
   color?: string;
 }
 
-export interface RetroStarburstProps {
+export interface RetroStarburstProps extends React.HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   size?: StarburstSize;
   color?: string;
 }
 
-export interface RetroProgressBarProps {
+export interface RetroProgressBarProps extends React.HTMLAttributes<HTMLDivElement> {
   progress?: number;
   variant?: ProgressVariant;
   showLabel?: boolean;
 }
 
-export interface RetroToggleProps {
+export interface RetroToggleProps extends Omit<React.HTMLAttributes<HTMLLabelElement>, 'onChange'> {
   checked?: boolean;
   onChange?: (checked: boolean) => void;
   label?: string;
@@ -100,7 +93,9 @@ export const RetroButton: React.FC<RetroButtonProps> = ({
   size = 'md',
   onClick,
   className = '',
-  disabled = false
+  disabled = false,
+  style: customStyle,
+  ...rest
 }) => {
   const [isPressed, setIsPressed] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -172,7 +167,8 @@ export const RetroButton: React.FC<RetroButtonProps> = ({
       onClick={!disabled ? onClick : undefined}
       disabled={disabled}
       className={className}
-      style={buttonStyle}
+      style={{ ...buttonStyle, ...customStyle }}
+      {...rest}
     >
       <div style={{
         position: 'absolute',
@@ -198,7 +194,9 @@ export const RetroCard: React.FC<RetroCardProps> = ({
   children,
   title,
   variant = 'default',
-  className = ''
+  className = '',
+  style: customStyle,
+  ...rest
 }) => {
   const variants: Record<CardVariant, string> = {
     default: 'rgba(255, 255, 255, 0.25)',
@@ -222,7 +220,8 @@ export const RetroCard: React.FC<RetroCardProps> = ({
   return (
     <div
       className={className}
-      style={cardStyle}
+      style={{ ...cardStyle, ...customStyle }}
+      {...rest}
     >
       <div style={{
         position: 'absolute',
@@ -261,7 +260,10 @@ export const RetroCard: React.FC<RetroCardProps> = ({
 export const RetroBadge: React.FC<RetroBadgeProps> = ({
   children,
   variant = 'primary',
-  size = 'md'
+  size = 'md',
+  className = '',
+  style: customStyle,
+  ...rest
 }) => {
   const variants: Record<BadgeVariant, { bg: string; color: string }> = {
     primary: {
@@ -309,7 +311,9 @@ export const RetroBadge: React.FC<RetroBadgeProps> = ({
 
   return (
     <span
-      style={badgeStyle}
+      className={className}
+      style={{ ...badgeStyle, ...customStyle }}
+      {...rest}
     >
       {children}
     </span>
@@ -326,7 +330,9 @@ export const RetroInput: React.FC<RetroInputProps> = ({
   onChange,
   type = 'text',
   className = '',
-  disabled = false
+  disabled = false,
+  style: customStyle,
+  ...rest
 }) => {
   const inputStyle: CSSProperties = {
     width: '100%',
@@ -353,7 +359,8 @@ export const RetroInput: React.FC<RetroInputProps> = ({
       placeholder={placeholder}
       disabled={disabled}
       className={className}
-      style={inputStyle}
+      style={{ ...inputStyle, ...customStyle }}
+      {...rest}
     />
   );
 };
@@ -362,13 +369,8 @@ export const RetroInput: React.FC<RetroInputProps> = ({
 // TEXTAREA
 // ============================================
 
-export interface RetroTextareaProps {
-  placeholder?: string;
-  value?: string;
+export interface RetroTextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'> {
   onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-  className?: string;
-  disabled?: boolean;
-  rows?: number;
 }
 
 export const RetroTextarea: React.FC<RetroTextareaProps> = ({
@@ -377,7 +379,9 @@ export const RetroTextarea: React.FC<RetroTextareaProps> = ({
   onChange,
   className = '',
   disabled = false,
-  rows = 4
+  rows = 4,
+  style: customStyle,
+  ...rest
 }) => {
   const textareaStyle: CSSProperties = {
     width: '100%',
@@ -405,7 +409,8 @@ export const RetroTextarea: React.FC<RetroTextareaProps> = ({
       disabled={disabled}
       rows={rows}
       className={className}
-      style={textareaStyle}
+      style={{ ...textareaStyle, ...customStyle }}
+      {...rest}
     />
   );
 };
@@ -417,7 +422,10 @@ export const RetroTextarea: React.FC<RetroTextareaProps> = ({
 export const RetroSpeechBubble: React.FC<RetroSpeechBubbleProps> = ({
   children,
   direction = 'left',
-  variant = 'default'
+  variant = 'default',
+  className = '',
+  style: customStyle,
+  ...rest
 }) => {
   const variants: Record<SpeechBubbleVariant, string> = {
     default: 'rgba(255, 255, 255, 0.35)',
@@ -436,7 +444,7 @@ export const RetroSpeechBubble: React.FC<RetroSpeechBubbleProps> = ({
   };
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block' }}>
+    <div className={className} style={{ position: 'relative', display: 'inline-block', ...customStyle }} {...rest}>
       <div style={bubbleStyle}>
         <div style={{
           position: 'absolute',
@@ -526,7 +534,10 @@ export const RetroSpeechBubble: React.FC<RetroSpeechBubbleProps> = ({
 export const RetroPanel: React.FC<RetroPanelProps> = ({
   children,
   sound,
-  color = '#DC2626'
+  color = '#DC2626',
+  className = '',
+  style: customStyle,
+  ...rest
 }) => {
   const panelStyle: CSSProperties = {
     background: 'rgba(255,255,255,0.2)',
@@ -539,7 +550,7 @@ export const RetroPanel: React.FC<RetroPanelProps> = ({
   };
 
   return (
-    <div style={panelStyle}>
+    <div className={className} style={{ ...panelStyle, ...customStyle }} {...rest}>
       {sound && (
         <div
           style={{
@@ -567,7 +578,10 @@ export const RetroPanel: React.FC<RetroPanelProps> = ({
 export const RetroStarburst: React.FC<RetroStarburstProps> = ({
   children,
   size = 'md',
-  color = '#FBBF24'
+  color = '#FBBF24',
+  className = '',
+  style: customStyle,
+  ...rest
 }) => {
   const sizes: Record<StarburstSize, { width: string; height: string; fontSize: string }> = {
     sm: { width: '4rem', height: '4rem', fontSize: '0.875rem' },
@@ -591,14 +605,15 @@ export const RetroStarburst: React.FC<RetroStarburstProps> = ({
   };
 
   return (
-    <div style={{
+    <div className={className} style={{
       position: 'relative',
       width: sizeStyle.width,
       height: sizeStyle.height,
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center'
-    }}>
+      justifyContent: 'center',
+      ...customStyle
+    }} {...rest}>
       <div style={starburstStyle}></div>
       <span
         style={{
@@ -624,7 +639,10 @@ export const RetroStarburst: React.FC<RetroStarburstProps> = ({
 export const RetroProgressBar: React.FC<RetroProgressBarProps> = ({
   progress = 0,
   variant = 'primary',
-  showLabel = true
+  showLabel = true,
+  className = '',
+  style: customStyle,
+  ...rest
 }) => {
   const variants: Record<ProgressVariant, string> = {
     primary: 'rgba(255, 220, 0, 0.6)',
@@ -657,7 +675,7 @@ export const RetroProgressBar: React.FC<RetroProgressBarProps> = ({
   };
 
   return (
-    <div style={containerStyle}>
+    <div className={className} style={{ ...containerStyle, ...customStyle }} {...rest}>
       <div style={barStyle}>
         <div style={{
           position: 'absolute',
@@ -694,7 +712,10 @@ export const RetroToggle: React.FC<RetroToggleProps> = ({
   checked = false,
   onChange,
   label,
-  disabled = false
+  disabled = false,
+  className = '',
+  style: customStyle,
+  ...rest
 }) => {
   const toggleStyle: CSSProperties = {
     position: 'relative',
@@ -717,12 +738,13 @@ export const RetroToggle: React.FC<RetroToggleProps> = ({
   };
 
   return (
-    <label style={{
+    <label className={className} style={{
       display: 'flex',
       alignItems: 'center',
       gap: '1rem',
-      cursor: !disabled ? 'pointer' : 'default'
-    }}>
+      cursor: !disabled ? 'pointer' : 'default',
+      ...customStyle
+    }} {...rest}>
       <div
         style={toggleStyle}
         onClick={handleClick}

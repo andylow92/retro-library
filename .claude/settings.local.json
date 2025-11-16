@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm outdated:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nFix component props to accept standard HTML attributes\n\nThis fixes TypeScript errors when using props like ''style'', ''id'', ''data-*'', etc.\n\nChanges:\n- Extend all component props from their respective HTML element types\n- RetroButton extends ButtonHTMLAttributes\n- RetroCard, RetroPanel, etc. extend HTMLAttributes<HTMLDivElement>\n- RetroInput extends InputHTMLAttributes\n- RetroTextarea extends TextareaHTMLAttributes\n- All components now spread {...rest} props to underlying elements\n- Fixed package.json module field (index.esm.js → index.mjs)\n- Added modern ''exports'' field to package.json\n\nThis allows users to pass any standard HTML attributes to components.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,10 +1,17 @@
 {
-  "name": "retro-futuristic-ui",
+  "name": "@andylow/retro-futuristic-ui",
   "version": "1.0.0",
   "description": "A retro-futuristic React component library with glassmorphism effects and bold comic-book styling",
   "main": "dist/index.js",
-  "module": "dist/index.esm.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
@@ -24,17 +31,17 @@
     "typescript",
     "tailwind"
   ],
-  "author": "",
+  "author": "Andres Lopez",
   "license": "MIT",
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
   },
   "devDependencies": {
-    "@types/react": "^18.3.26",
-    "@types/react-dom": "^18.3.7",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   },
