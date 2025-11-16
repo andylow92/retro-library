@@ -94,15 +94,16 @@ interface ButtonStyleConfig {
 // BUTTONS
 // ============================================
 
-export const RetroButton: React.FC<RetroButtonProps> = ({ 
-  children, 
-  variant = 'primary', 
+export const RetroButton: React.FC<RetroButtonProps> = ({
+  children,
+  variant = 'primary',
   size = 'md',
   onClick,
   className = '',
   disabled = false
 }) => {
   const [isPressed, setIsPressed] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const variants: Record<ButtonVariant, ButtonStyleConfig> = {
     primary: {
@@ -127,50 +128,64 @@ export const RetroButton: React.FC<RetroButtonProps> = ({
     }
   };
 
-  const sizes: Record<ButtonSize, string> = {
-    sm: 'px-6 py-3 text-lg',
-    md: 'px-10 py-6 text-3xl',
-    lg: 'px-16 py-8 text-4xl'
+  const sizes: Record<ButtonSize, { padding: string; fontSize: string }> = {
+    sm: { padding: '0.75rem 1.5rem', fontSize: '1.125rem' },
+    md: { padding: '1.5rem 2.5rem', fontSize: '1.875rem' },
+    lg: { padding: '2rem 4rem', fontSize: '2.25rem' }
   };
 
   const style = variants[variant];
+  const sizeStyle = sizes[size];
 
   const buttonStyle: CSSProperties = {
+    position: 'relative',
     background: style.background,
     backdropFilter: 'blur(16px)',
     WebkitBackdropFilter: 'blur(16px)',
-    boxShadow: isPressed 
+    boxShadow: isPressed
       ? '4px 4px 0px 2px #000, inset 0 8px 24px rgba(255,255,255,0.2)'
       : '8px 8px 0px 4px #000, inset 0 8px 24px rgba(255,255,255,0.3)',
     color: style.color,
     textShadow: '3px 3px 0px #000, -2px -2px 0px rgba(255,255,255,0.8)',
     fontFamily: 'Impact, Arial Black, sans-serif',
+    fontWeight: 900,
+    textTransform: 'uppercase',
     letterSpacing: '2px',
+    padding: sizeStyle.padding,
+    fontSize: sizeStyle.fontSize,
+    border: '5px solid #000',
+    borderRadius: '0.5rem',
     opacity: disabled ? 0.6 : 1,
-    cursor: disabled ? 'not-allowed' : 'pointer'
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    transition: 'all 150ms',
+    transform: isPressed
+      ? 'translate(0.5rem, 0.5rem) scale(1)'
+      : (isHovered && !disabled ? 'translate(0, 0) scale(1.05)' : 'translate(0, 0) scale(1)'),
   };
 
   return (
     <button
       onMouseDown={() => !disabled && setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
-      onMouseLeave={() => setIsPressed(false)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => { setIsPressed(false); setIsHovered(false); }}
       onClick={!disabled ? onClick : undefined}
       disabled={disabled}
-      className={`
-        relative font-black uppercase border-5 border-black rounded-lg
-        transition-all duration-150 ${!disabled && 'hover:scale-105'}
-        ${sizes[size]}
-        ${isPressed ? 'translate-x-2 translate-y-2' : ''}
-        ${className}
-      `}
+      className={className}
       style={buttonStyle}
     >
-      <div className="absolute inset-0 rounded-lg pointer-events-none" style={{
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        borderRadius: '0.5rem',
+        pointerEvents: 'none',
         backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.15) 1.5px, transparent 1.5px)`,
         backgroundSize: '6px 6px'
       }}></div>
-      <span className="relative z-10">{children}</span>
+      <span style={{ position: 'relative', zIndex: 10 }}>{children}</span>
     </button>
   );
 };
@@ -179,8 +194,8 @@ export const RetroButton: React.FC<RetroButtonProps> = ({
 // CARDS
 // ============================================
 
-export const RetroCard: React.FC<RetroCardProps> = ({ 
-  children, 
+export const RetroCard: React.FC<RetroCardProps> = ({
+  children,
   title,
   variant = 'default',
   className = ''
@@ -194,23 +209,39 @@ export const RetroCard: React.FC<RetroCardProps> = ({
   };
 
   const cardStyle: CSSProperties = {
+    position: 'relative',
     background: variants[variant],
     backdropFilter: 'blur(16px)',
     WebkitBackdropFilter: 'blur(16px)',
-    boxShadow: '8px 8px 0px 2px #000, inset 0 6px 24px rgba(255,255,255,0.2)'
+    boxShadow: '8px 8px 0px 2px #000, inset 0 6px 24px rgba(255,255,255,0.2)',
+    border: '4px solid #000',
+    borderRadius: '0.5rem',
+    padding: '1.5rem'
   };
 
   return (
-    <div 
-      className={`border-4 border-black rounded-lg p-6 relative ${className}`}
+    <div
+      className={className}
       style={cardStyle}
     >
-      <div className="absolute inset-0 rounded-lg pointer-events-none" style={{
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        borderRadius: '0.5rem',
+        pointerEvents: 'none',
         backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.08) 1.5px, transparent 1.5px)`,
         backgroundSize: '8px 8px'
       }}></div>
       {title && (
-        <h3 className="text-2xl font-black mb-4 relative z-10" style={{
+        <h3 style={{
+          fontSize: '1.5rem',
+          fontWeight: 900,
+          marginBottom: '1rem',
+          position: 'relative',
+          zIndex: 10,
           color: '#000',
           textShadow: '2px 2px 0px rgba(255,255,255,0.8)',
           fontFamily: 'Arial Black, sans-serif'
@@ -218,7 +249,7 @@ export const RetroCard: React.FC<RetroCardProps> = ({
           {title}
         </h3>
       )}
-      <div className="relative z-10">{children}</div>
+      <div style={{ position: 'relative', zIndex: 10 }}>{children}</div>
     </div>
   );
 };
@@ -227,8 +258,8 @@ export const RetroCard: React.FC<RetroCardProps> = ({
 // BADGES
 // ============================================
 
-export const RetroBadge: React.FC<RetroBadgeProps> = ({ 
-  children, 
+export const RetroBadge: React.FC<RetroBadgeProps> = ({
+  children,
   variant = 'primary',
   size = 'md'
 }) => {
@@ -251,27 +282,33 @@ export const RetroBadge: React.FC<RetroBadgeProps> = ({
     }
   };
 
-  const sizes: Record<BadgeSize, string> = {
-    sm: 'px-3 py-1 text-sm',
-    md: 'px-4 py-2 text-lg',
-    lg: 'px-6 py-3 text-xl'
+  const sizes: Record<BadgeSize, { padding: string; fontSize: string }> = {
+    sm: { padding: '0.25rem 0.75rem', fontSize: '0.875rem' },
+    md: { padding: '0.5rem 1rem', fontSize: '1.125rem' },
+    lg: { padding: '0.75rem 1.5rem', fontSize: '1.25rem' }
   };
 
   const style = variants[variant];
+  const sizeStyle = sizes[size];
 
   const badgeStyle: CSSProperties = {
+    display: 'inline-block',
     background: style.bg,
     backdropFilter: 'blur(12px)',
     WebkitBackdropFilter: 'blur(12px)',
     boxShadow: '4px 4px 0px 1px #000, inset 0 4px 12px rgba(255,255,255,0.2)',
     color: style.color,
     textShadow: '2px 2px 0px #000, -1px -1px 0px rgba(255,255,255,0.6)',
-    fontFamily: 'Arial Black, sans-serif'
+    fontFamily: 'Arial Black, sans-serif',
+    fontWeight: 900,
+    border: '3px solid #000',
+    borderRadius: '0.5rem',
+    padding: sizeStyle.padding,
+    fontSize: sizeStyle.fontSize
   };
 
   return (
-    <span 
-      className={`inline-block font-black border-3 border-black rounded-lg ${sizes[size]}`}
+    <span
       style={badgeStyle}
     >
       {children}
@@ -283,8 +320,8 @@ export const RetroBadge: React.FC<RetroBadgeProps> = ({
 // INPUT FIELDS
 // ============================================
 
-export const RetroInput: React.FC<RetroInputProps> = ({ 
-  placeholder = 'Enter text...', 
+export const RetroInput: React.FC<RetroInputProps> = ({
+  placeholder = 'Enter text...',
   value,
   onChange,
   type = 'text',
@@ -292,12 +329,18 @@ export const RetroInput: React.FC<RetroInputProps> = ({
   disabled = false
 }) => {
   const inputStyle: CSSProperties = {
+    width: '100%',
     background: 'rgba(255, 255, 255, 0.3)',
     backdropFilter: 'blur(12px)',
     WebkitBackdropFilter: 'blur(12px)',
     boxShadow: 'inset 4px 4px 0px rgba(0,0,0,0.2), 4px 4px 0px 2px #000',
     color: '#000',
     fontFamily: 'Arial Black, sans-serif',
+    fontWeight: 700,
+    fontSize: '1.25rem',
+    padding: '1rem 1.5rem',
+    border: '4px solid #000',
+    borderRadius: '0.5rem',
     outline: 'none',
     opacity: disabled ? 0.6 : 1
   };
@@ -309,7 +352,7 @@ export const RetroInput: React.FC<RetroInputProps> = ({
       onChange={onChange}
       placeholder={placeholder}
       disabled={disabled}
-      className={`w-full px-6 py-4 text-xl font-bold border-4 border-black rounded-lg ${className}`}
+      className={className}
       style={inputStyle}
     />
   );
@@ -328,8 +371,8 @@ export interface RetroTextareaProps {
   rows?: number;
 }
 
-export const RetroTextarea: React.FC<RetroTextareaProps> = ({ 
-  placeholder = 'Enter text...', 
+export const RetroTextarea: React.FC<RetroTextareaProps> = ({
+  placeholder = 'Enter text...',
   value,
   onChange,
   className = '',
@@ -337,12 +380,18 @@ export const RetroTextarea: React.FC<RetroTextareaProps> = ({
   rows = 4
 }) => {
   const textareaStyle: CSSProperties = {
+    width: '100%',
     background: 'rgba(255, 255, 255, 0.3)',
     backdropFilter: 'blur(12px)',
     WebkitBackdropFilter: 'blur(12px)',
     boxShadow: 'inset 4px 4px 0px rgba(0,0,0,0.2), 4px 4px 0px 2px #000',
     color: '#000',
     fontFamily: 'Arial Black, sans-serif',
+    fontWeight: 700,
+    fontSize: '1.25rem',
+    padding: '1rem 1.5rem',
+    border: '4px solid #000',
+    borderRadius: '0.5rem',
     outline: 'none',
     opacity: disabled ? 0.6 : 1,
     resize: 'vertical' as const
@@ -355,7 +404,7 @@ export const RetroTextarea: React.FC<RetroTextareaProps> = ({
       placeholder={placeholder}
       disabled={disabled}
       rows={rows}
-      className={`w-full px-6 py-4 text-xl font-bold border-4 border-black rounded-lg ${className}`}
+      className={className}
       style={textareaStyle}
     />
   );
@@ -365,8 +414,8 @@ export const RetroTextarea: React.FC<RetroTextareaProps> = ({
 // SPEECH BUBBLES
 // ============================================
 
-export const RetroSpeechBubble: React.FC<RetroSpeechBubbleProps> = ({ 
-  children, 
+export const RetroSpeechBubble: React.FC<RetroSpeechBubbleProps> = ({
+  children,
   direction = 'left',
   variant = 'default'
 }) => {
@@ -380,20 +429,31 @@ export const RetroSpeechBubble: React.FC<RetroSpeechBubbleProps> = ({
     background: variants[variant],
     backdropFilter: 'blur(16px)',
     WebkitBackdropFilter: 'blur(16px)',
-    boxShadow: '8px 8px 0px 2px #000, inset 0 6px 24px rgba(255,255,255,0.25)'
+    boxShadow: '8px 8px 0px 2px #000, inset 0 6px 24px rgba(255,255,255,0.25)',
+    border: '5px solid #000',
+    padding: '1.5rem 2rem',
+    borderRadius: variant === 'thought' ? '9999px' : '0.5rem'
   };
 
   return (
-    <div className="relative inline-block">
-      <div 
-        className={`border-5 border-black px-8 py-6 ${variant === 'thought' ? 'rounded-full' : 'rounded-lg'}`}
-        style={bubbleStyle}
-      >
-        <div className={`absolute inset-0 ${variant === 'thought' ? 'rounded-full' : 'rounded-lg'}`} style={{
+    <div style={{ position: 'relative', display: 'inline-block' }}>
+      <div style={bubbleStyle}>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          borderRadius: variant === 'thought' ? '9999px' : '0.5rem',
           backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.08) 1.5px, transparent 1.5px)`,
           backgroundSize: '6px 6px'
         }}></div>
-        <p className="text-2xl font-black relative z-10" style={{
+        <p style={{
+          fontSize: '1.5rem',
+          fontWeight: 900,
+          position: 'relative',
+          zIndex: 10,
+          margin: 0,
           color: '#000',
           textShadow: '2px 2px 0px rgba(255,255,255,0.8)',
           fontFamily: 'Arial Black, sans-serif',
@@ -402,29 +462,56 @@ export const RetroSpeechBubble: React.FC<RetroSpeechBubbleProps> = ({
           {children}
         </p>
       </div>
-      
+
       {/* Bubble tail */}
       {variant === 'thought' ? (
-        <div className={`absolute -bottom-8 ${direction === 'left' ? 'left-1/3' : 'right-1/3'} flex gap-2`}>
-          <div className="w-6 h-6 border-3 border-black rounded-full" style={{
+        <div style={{
+          position: 'absolute',
+          bottom: '-2rem',
+          left: direction === 'left' ? '33.333%' : 'auto',
+          right: direction === 'right' ? '33.333%' : 'auto',
+          display: 'flex',
+          gap: '0.5rem'
+        }}>
+          <div style={{
+            width: '1.5rem',
+            height: '1.5rem',
+            border: '3px solid #000',
+            borderRadius: '9999px',
             background: 'rgba(255,255,255,0.4)',
             backdropFilter: 'blur(10px)'
           }}></div>
-          <div className="w-4 h-4 border-3 border-black rounded-full" style={{
+          <div style={{
+            width: '1rem',
+            height: '1rem',
+            border: '3px solid #000',
+            borderRadius: '9999px',
             background: 'rgba(255,255,255,0.4)',
             backdropFilter: 'blur(8px)'
           }}></div>
-          <div className="w-2 h-2 border-2 border-black rounded-full" style={{
+          <div style={{
+            width: '0.5rem',
+            height: '0.5rem',
+            border: '2px solid #000',
+            borderRadius: '9999px',
             background: 'rgba(255,255,255,0.4)',
             backdropFilter: 'blur(6px)'
           }}></div>
         </div>
       ) : (
-        <div 
-          className={`absolute -bottom-3 ${direction === 'left' ? 'left-8' : 'right-8'} w-8 h-8 border-b-5 border-r-5 border-black rotate-45`}
+        <div
           style={{
+            position: 'absolute',
+            bottom: '-0.75rem',
+            left: direction === 'left' ? '2rem' : 'auto',
+            right: direction === 'right' ? '2rem' : 'auto',
+            width: '2rem',
+            height: '2rem',
+            borderBottom: '5px solid #000',
+            borderRight: '5px solid #000',
             background: variants[variant],
-            backdropFilter: 'blur(16px)'
+            backdropFilter: 'blur(16px)',
+            transform: 'rotate(45deg)'
           }}
         ></div>
       )}
@@ -436,8 +523,8 @@ export const RetroSpeechBubble: React.FC<RetroSpeechBubbleProps> = ({
 // COMIC PANELS
 // ============================================
 
-export const RetroPanel: React.FC<RetroPanelProps> = ({ 
-  children, 
+export const RetroPanel: React.FC<RetroPanelProps> = ({
+  children,
   sound,
   color = '#DC2626'
 }) => {
@@ -445,18 +532,21 @@ export const RetroPanel: React.FC<RetroPanelProps> = ({
     background: 'rgba(255,255,255,0.2)',
     backdropFilter: 'blur(10px)',
     WebkitBackdropFilter: 'blur(10px)',
-    boxShadow: '6px 6px 0px 2px #000'
+    boxShadow: '6px 6px 0px 2px #000',
+    border: '4px solid #000',
+    padding: '1.5rem',
+    borderRadius: '0.5rem'
   };
 
   return (
-    <div 
-      className="border-4 border-black p-6 rounded-lg"
-      style={panelStyle}
-    >
+    <div style={panelStyle}>
       {sound && (
-        <div 
-          className="text-6xl font-black text-center mb-4"
+        <div
           style={{
+            fontSize: '3.75rem',
+            fontWeight: 900,
+            textAlign: 'center',
+            marginBottom: '1rem',
             color: color,
             textShadow: '3px 3px 0px #000, -1px -1px 0px rgba(255,255,255,0.6)',
             fontFamily: 'Impact, Arial Black, sans-serif'
@@ -474,18 +564,25 @@ export const RetroPanel: React.FC<RetroPanelProps> = ({
 // STARBURST BADGE
 // ============================================
 
-export const RetroStarburst: React.FC<RetroStarburstProps> = ({ 
+export const RetroStarburst: React.FC<RetroStarburstProps> = ({
   children,
   size = 'md',
   color = '#FBBF24'
 }) => {
-  const sizes: Record<StarburstSize, string> = {
-    sm: 'w-16 h-16 text-sm',
-    md: 'w-24 h-24 text-xl',
-    lg: 'w-32 h-32 text-3xl'
+  const sizes: Record<StarburstSize, { width: string; height: string; fontSize: string }> = {
+    sm: { width: '4rem', height: '4rem', fontSize: '0.875rem' },
+    md: { width: '6rem', height: '6rem', fontSize: '1.25rem' },
+    lg: { width: '8rem', height: '8rem', fontSize: '1.875rem' }
   };
 
+  const sizeStyle = sizes[size];
+
   const starburstStyle: CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
     background: `radial-gradient(circle, ${color}40 0%, ${color}20 100%)`,
     backdropFilter: 'blur(8px)',
     clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
@@ -494,14 +591,21 @@ export const RetroStarburst: React.FC<RetroStarburstProps> = ({
   };
 
   return (
-    <div className={`relative ${sizes[size]} flex items-center justify-center`}>
-      <div 
-        className="absolute inset-0"
-        style={starburstStyle}
-      ></div>
-      <span 
-        className="relative z-10 font-black"
+    <div style={{
+      position: 'relative',
+      width: sizeStyle.width,
+      height: sizeStyle.height,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
+      <div style={starburstStyle}></div>
+      <span
         style={{
+          position: 'relative',
+          zIndex: 10,
+          fontWeight: 900,
+          fontSize: sizeStyle.fontSize,
           color: '#000',
           textShadow: '2px 2px 0px rgba(255,255,255,0.8)',
           fontFamily: 'Impact, Arial Black, sans-serif'
@@ -517,7 +621,7 @@ export const RetroStarburst: React.FC<RetroStarburstProps> = ({
 // PROGRESS BAR
 // ============================================
 
-export const RetroProgressBar: React.FC<RetroProgressBarProps> = ({ 
+export const RetroProgressBar: React.FC<RetroProgressBarProps> = ({
   progress = 0,
   variant = 'primary',
   showLabel = true
@@ -530,35 +634,46 @@ export const RetroProgressBar: React.FC<RetroProgressBarProps> = ({
   };
 
   const containerStyle: CSSProperties = {
+    width: '100%',
     background: 'rgba(255, 255, 255, 0.2)',
     backdropFilter: 'blur(10px)',
-    boxShadow: 'inset 2px 2px 4px rgba(0,0,0,0.3), 4px 4px 0px 2px #000'
+    boxShadow: 'inset 2px 2px 4px rgba(0,0,0,0.3), 4px 4px 0px 2px #000',
+    border: '4px solid #000',
+    borderRadius: '0.5rem',
+    padding: '0.25rem'
   };
 
   const barStyle: CSSProperties = {
     width: `${Math.min(100, Math.max(0, progress))}%`,
+    height: '2rem',
     background: variants[variant],
     backdropFilter: 'blur(8px)',
-    boxShadow: 'inset 0 4px 8px rgba(255,255,255,0.3)'
+    boxShadow: 'inset 0 4px 8px rgba(255,255,255,0.3)',
+    borderRadius: '0.25rem',
+    border: '2px solid #000',
+    transition: 'all 500ms',
+    position: 'relative',
+    overflow: 'hidden'
   };
 
   return (
-    <div 
-      className="w-full border-4 border-black rounded-lg p-1"
-      style={containerStyle}
-    >
-      <div 
-        className="h-8 rounded border-2 border-black transition-all duration-500 relative overflow-hidden"
-        style={barStyle}
-      >
-        <div className="absolute inset-0" style={{
+    <div style={containerStyle}>
+      <div style={barStyle}>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
           backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px)`
         }}></div>
       </div>
       {showLabel && (
-        <div 
-          className="text-center font-black mt-2"
+        <div
           style={{
+            textAlign: 'center',
+            fontWeight: 900,
+            marginTop: '0.5rem',
             color: '#000',
             textShadow: '1px 1px 0px rgba(255,255,255,0.8)',
             fontFamily: 'Arial Black, sans-serif'
@@ -575,16 +690,21 @@ export const RetroProgressBar: React.FC<RetroProgressBarProps> = ({
 // TOGGLE SWITCH
 // ============================================
 
-export const RetroToggle: React.FC<RetroToggleProps> = ({ 
+export const RetroToggle: React.FC<RetroToggleProps> = ({
   checked = false,
   onChange,
   label,
   disabled = false
 }) => {
   const toggleStyle: CSSProperties = {
+    position: 'relative',
+    width: '5rem',
+    height: '2.5rem',
     background: checked ? 'rgba(34, 197, 94, 0.4)' : 'rgba(200, 200, 200, 0.4)',
     backdropFilter: 'blur(12px)',
     boxShadow: 'inset 2px 2px 4px rgba(0,0,0,0.3), 4px 4px 0px 2px #000',
+    border: '4px solid #000',
+    borderRadius: '9999px',
     transition: 'all 0.3s',
     opacity: disabled ? 0.6 : 1,
     cursor: disabled ? 'not-allowed' : 'pointer'
@@ -597,15 +717,25 @@ export const RetroToggle: React.FC<RetroToggleProps> = ({
   };
 
   return (
-    <label className={`flex items-center gap-4 ${!disabled && 'cursor-pointer'}`}>
-      <div 
-        className="relative w-20 h-10 border-4 border-black rounded-full"
+    <label style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '1rem',
+      cursor: !disabled ? 'pointer' : 'default'
+    }}>
+      <div
         style={toggleStyle}
         onClick={handleClick}
       >
-        <div 
-          className="absolute top-0.5 w-8 h-8 bg-white border-3 border-black rounded-full"
+        <div
           style={{
+            position: 'absolute',
+            top: '0.125rem',
+            width: '2rem',
+            height: '2rem',
+            background: 'white',
+            border: '3px solid #000',
+            borderRadius: '9999px',
             left: checked ? 'calc(100% - 2.25rem)' : '0.125rem',
             transition: 'all 0.3s',
             boxShadow: '2px 2px 0px rgba(0,0,0,0.4)'
@@ -613,9 +743,10 @@ export const RetroToggle: React.FC<RetroToggleProps> = ({
         ></div>
       </div>
       {label && (
-        <span 
-          className="font-black text-xl"
+        <span
           style={{
+            fontWeight: 900,
+            fontSize: '1.25rem',
             color: '#000',
             textShadow: '1px 1px 0px rgba(255,255,255,0.8)',
             fontFamily: 'Arial Black, sans-serif'
