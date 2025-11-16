@@ -27,9 +27,8 @@ yarn add retro-futuristic-ui
 
 This library requires:
 - React >= 16.8.0
-- TailwindCSS (for utility classes)
 
-Make sure you have TailwindCSS installed and configured in your project.
+No additional CSS frameworks or configuration needed - all styles are included!
 
 ## Components
 
@@ -265,9 +264,10 @@ function App() {
 ## Styling Notes
 
 This library uses:
-- **TailwindCSS** for utility classes (required)
-- Inline styles for glassmorphism and special effects
+- **Inline styles** for all styling (no external CSS required)
+- Glassmorphism effects with backdrop-filter
 - Impact, Arial Black fonts for bold text (system fonts)
+- No dependencies on CSS frameworks
 
 For best results, use vibrant gradient backgrounds to showcase the glassmorphism effects.
 
@@ -318,4 +318,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Credits
 
-Created with React, TypeScript, and TailwindCSS.
+Created with React and TypeScript.

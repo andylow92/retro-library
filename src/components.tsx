@@ -25,6 +25,8 @@ export interface RetroButtonProps {
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
+  ariaLabel?: string;
+  type?: 'button' | 'submit' | 'reset';
 }
 
 export interface RetroCardProps {
@@ -32,6 +34,8 @@ export interface RetroCardProps {
   title?: string;
   variant?: CardVariant;
   className?: string;
+  role?: string;
+  ariaLabel?: string;
 }
 
 export interface RetroBadgeProps {
@@ -47,6 +51,11 @@ export interface RetroInputProps {
   type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
   className?: string;
   disabled?: boolean;
+  ariaLabel?: string;
+  id?: string;
+  name?: string;
+  required?: boolean;
+  autoComplete?: string;
 }
 
 export interface RetroSpeechBubbleProps {
@@ -71,6 +80,7 @@ export interface RetroProgressBarProps {
   progress?: number;
   variant?: ProgressVariant;
   showLabel?: boolean;
+  ariaLabel?: string;
 }
 
 export interface RetroToggleProps {
@@ -78,6 +88,8 @@ export interface RetroToggleProps {
   onChange?: (checked: boolean) => void;
   label?: string;
   disabled?: boolean;
+  ariaLabel?: string;
+  id?: string;
 }
 
 // ============================================
@@ -100,7 +112,9 @@ export const RetroButton: React.FC<RetroButtonProps> = ({
   size = 'md',
   onClick,
   className = '',
-  disabled = false
+  disabled = false,
+  ariaLabel,
+  type = 'button'
 }) => {
   const [isPressed, setIsPressed] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -163,16 +177,36 @@ export const RetroButton: React.FC<RetroButtonProps> = ({
       : (isHovered && !disabled ? 'translate(0, 0) scale(1.05)' : 'translate(0, 0) scale(1)'),
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      setIsPressed(true);
+    }
+  };
+
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      setIsPressed(false);
+      onClick?.();
+    }
+  };
+
   return (
     <button
+      type={type}
       onMouseDown={() => !disabled && setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => { setIsPressed(false); setIsHovered(false); }}
+      onKeyDown={handleKeyDown}
+      onKeyUp={handleKeyUp}
       onClick={!disabled ? onClick : undefined}
       disabled={disabled}
       className={className}
       style={buttonStyle}
+      aria-label={ariaLabel}
+      aria-disabled={disabled}
     >
       <div style={{
         position: 'absolute',
@@ -198,7 +232,9 @@ export const RetroCard: React.FC<RetroCardProps> = ({
   children,
   title,
   variant = 'default',
-  className = ''
+  className = '',
+  role = 'region',
+  ariaLabel
 }) => {
   const variants: Record<CardVariant, string> = {
     default: 'rgba(255, 255, 255, 0.25)',
@@ -223,6 +259,8 @@ export const RetroCard: React.FC<RetroCardProps> = ({
     <div
       className={className}
       style={cardStyle}
+      role={role}
+      aria-label={ariaLabel || title}
     >
       <div style={{
         position: 'absolute',
@@ -326,7 +364,12 @@ export const RetroInput: React.FC<RetroInputProps> = ({
   onChange,
   type = 'text',
   className = '',
-  disabled = false
+  disabled = false,
+  ariaLabel,
+  id,
+  name,
+  required = false,
+  autoComplete
 }) => {
   const inputStyle: CSSProperties = {
     width: '100%',
@@ -354,6 +397,13 @@ export const RetroInput: React.FC<RetroInputProps> = ({
       disabled={disabled}
       className={className}
       style={inputStyle}
+      aria-label={ariaLabel || placeholder}
+      id={id}
+      name={name}
+      required={required}
+      autoComplete={autoComplete}
+      aria-required={required}
+      aria-disabled={disabled}
     />
   );
 };
@@ -369,6 +419,10 @@ export interface RetroTextareaProps {
   className?: string;
   disabled?: boolean;
   rows?: number;
+  ariaLabel?: string;
+  id?: string;
+  name?: string;
+  required?: boolean;
 }
 
 export const RetroTextarea: React.FC<RetroTextareaProps> = ({
@@ -377,7 +431,11 @@ export const RetroTextarea: React.FC<RetroTextareaProps> = ({
   onChange,
   className = '',
   disabled = false,
-  rows = 4
+  rows = 4,
+  ariaLabel,
+  id,
+  name,
+  required = false
 }) => {
   const textareaStyle: CSSProperties = {
     width: '100%',
@@ -406,6 +464,12 @@ export const RetroTextarea: React.FC<RetroTextareaProps> = ({
       rows={rows}
       className={className}
       style={textareaStyle}
+      aria-label={ariaLabel || placeholder}
+      id={id}
+      name={name}
+      required={required}
+      aria-required={required}
+      aria-disabled={disabled}
     />
   );
 };
@@ -624,7 +688,8 @@ export const RetroStarburst: React.FC<RetroStarburstProps> = ({
 export const RetroProgressBar: React.FC<RetroProgressBarProps> = ({
   progress = 0,
   variant = 'primary',
-  showLabel = true
+  showLabel = true,
+  ariaLabel = 'Progress'
 }) => {
   const variants: Record<ProgressVariant, string> = {
     primary: 'rgba(255, 220, 0, 0.6)',
@@ -657,7 +722,14 @@ export const RetroProgressBar: React.FC<RetroProgressBarProps> = ({
   };
 
   return (
-    <div style={containerStyle}>
+    <div
+      style={containerStyle}
+      role="progressbar"
+      aria-valuenow={Math.round(progress)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label={ariaLabel}
+    >
       <div style={barStyle}>
         <div style={{
           position: 'absolute',
@@ -694,7 +766,9 @@ export const RetroToggle: React.FC<RetroToggleProps> = ({
   checked = false,
   onChange,
   label,
-  disabled = false
+  disabled = false,
+  ariaLabel,
+  id
 }) => {
   const toggleStyle: CSSProperties = {
     position: 'relative',
@@ -716,16 +790,32 @@ export const RetroToggle: React.FC<RetroToggleProps> = ({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onChange?.(!checked);
+    }
+  };
+
   return (
-    <label style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '1rem',
-      cursor: !disabled ? 'pointer' : 'default'
-    }}>
+    <label
+      htmlFor={id}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1rem',
+        cursor: !disabled ? 'pointer' : 'default'
+      }}
+    >
       <div
         style={toggleStyle}
         onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        role="switch"
+        aria-checked={checked}
+        aria-label={ariaLabel || label}
+        aria-disabled={disabled}
+        tabIndex={disabled ? -1 : 0}
       >
         <div
           style={{

@@ -34,3 +34,16 @@ export type {
   RetroProgressBarProps,
   RetroToggleProps,
 } from './components';
+
+// Export theme components and types
+export {
+  RetroThemeProvider,
+  RetroThemeStyles,
+  useRetroTheme,
+  defaultTheme,
+} from './theme';
+
+export type {
+  RetroTheme,
+  ThemeProviderProps,
+} from './theme';
